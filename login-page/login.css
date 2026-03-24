@@ -1,0 +1,115 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
+*{
+    padding:0;
+    margin:0;
+    box-sizing: border-box;
+    font-family: "Poppins",sans-serif;
+}
+.form_container input{
+    border:none;
+    padding: 1.2rem 1rem;
+    width:500px;
+    outline:none;
+    border-radius:4px;
+    font-size:1.2rem;
+}
+.form_container .icons{
+    position:absolute;
+}
+.form_container .icons{
+    position:relative;
+    left:420px;
+    top:20px;
+    font-size: 2rem;
+    cursor:pointer;
+}
+.icons{
+    position:relative;
+    display:inline-block;
+    width:100%;
+}
+.icons input{
+    padding-right:35px;
+}
+.icons i{
+    position:absolute;
+    right:10px;
+    top:8px;
+    cursor:pointer;
+}
+body{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    background:linear-gradient(to right,lavenderblush,lightblue);
+    color:#333;
+}
+.container{
+    margin:0 15px;
+}
+.form-box{
+    width:100%;
+    max-width:450px;
+    padding:30px;
+    background: antiquewhite;
+    border-radius:10px;
+    box-shadow:0010px rgba(0,0,0,0.1);
+    display:none;
+}
+.form-box.active{
+    display:block;
+}
+h2{
+    font-size: 34px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+input,select{
+    width:100%;
+    padding:12px;
+    background:whitesmoke;
+    border-radius: 6px;
+    border:none;
+    outline:none;
+    font-size: 16px;
+    color:#333;
+    margin-bottom: 20px;
+}
+button{
+    width:100%;
+    padding:12px;
+    background: #7494ec;
+    border-radius: 6px;
+    border:none;
+    cursor:pointer;
+    font-size:16px;
+    color:#fff;
+    font-weight: 500;
+    margin-bottom: 20px;
+    transition:0.5s;
+}
+button:hover{
+    background: #6884d3;
+}
+p{
+    font-size: 14.5px;
+    text-align: center;
+    margin-bottom: 10px;
+}
+p a{
+    color:#7494ec;
+    text-decoration:none;
+}
+p a:hover{
+    text-decoration:underline;
+}
+.error-message{
+    padding:12px;
+    background:rgba(190, 80, 80, 0.1);
+    border-radius:6px;
+    font-size: 16px;
+    color:red;
+    text-align:center;
+    margin-bottom:20px;
+}
