@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expense Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tracker.css">
+
+</head>
+
+<body style="background-image: url('media/trackerback.jpg'); background-size: cover; background-position: center; background-attachment: fixed;">
+
+  <nav class="app-nav">
+    <h2 class="nav-title">ExpenseFlow &nbsp;-&nbsp; Tracker</h2>
+    <div class="nav-actions">
+      <button class="btn-secondary" onclick="window.location.href='dashboard.html'">dashboard</button>
+      <button class="btn-secondary" onclick="window.location.href='home.html'">log out</button>
+      <button class="btn-secondary" onclick="window.location.href='login.html'">switch accounts</button>
+    </div>
+  </nav>
+
+  <!-- ══ HOME PAGE ══ -->
+  <div class="page active" id="page-home">
+
+    <div class="page-eyebrow">Your finances</div>
+    <div class="page-big-title">Monthly <em>Overview</em></div>
+
+    <!-- Card 1: Budget -->
+    <div class="card">
+      <div class="month-bar">
+        <button class="mth-btn" onclick="changeMonth(-1)">&#8249;</button>
+        <span class="month-name" id="month-display"></span>
+        <button class="mth-btn" onclick="changeMonth(1)">&#8250;</button>
+      </div>
+      <div class="card-label">Monthly Budget</div>
+      <div id="budget-content"></div>
+    </div>
+
+    <!-- Card 2: Add Expense  and income -->
+    <div class="action-pair">
+      <div class="card card-action" onclick="goTo('page-add')">
+        <div class="row">
+          <div>
+            <div class="ac-icon">➕</div>
+            <div class="ac-title">Add Expense</div>
+            <div class="ac-sub">Log spending by category</div>
+          </div>
+          <span style="font-size:24px;color:var(--border-strong)">→</span>
+        </div>
+      </div>
+      <div class="card card-action" onclick="openIncomeModal()">
+        <div class="row">
+          <div>
+            <div class="ac-icon ac-icon-income">💰</div>
+            <div class="ac-title ac-title-income">Add Income</div>
+            <div class="ac-sub">Record money received</div>
+          </div>
+          <span style="font-size:24px;color:var(--green)">→</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3: Recent Transactions -->
+    <div class="card">
+      <div class="sec-title">
+        Recent Transactions
+        <button class="link-btn" onclick="goTo('page-history')">View all →</button>
+      </div>
+      <div id="recent-tx-list"></div>
+    </div>
+
+    <!-- Card 4: Debts & Reminders -->
+    <div class="card">
+      <div class="sec-title">
+        Debts &amp; Reminders
+        <button class="link-btn" onclick="openDebtModal(null)">+ Add</button>
+      </div>
+      <div id="debt-list"></div>
+    </div>
+
+  </div>
+
+  <!-- ══ ADD EXPENSE PAGE ══ -->
+  <div class="page" id="page-add">
+    <div class="page-header">
+      <button class="back-btn" onclick="goTo('page-home')">← Back</button>
+      <span class="page-header-title">Add Expense</span>
+    </div>
+
+    <div class="card">
+      <div class="form-group">
+        <label class="form-label">Amount (₹)</label>
+        <input type="number" id="exp-amount" placeholder="0.00" min="0" step="0.01">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Note (optional)</label>
+        <input type="text" id="exp-note" placeholder="What was this for?">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <div class="cat-chips" id="cat-chips"></div>
+        <button class="btn-secondary" style="font-size:13px;padding:7px 14px;width:auto;border-radius:50px;" onclick="openAddCatModal()">
+          + New category
+        </button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date</label>
+        <input type="date" id="exp-date">
+      </div>
+      <div class="card-divider"></div>
+      <button class="btn-primary" onclick="addExpense()">Save Expense</button>
+      <div id="save-feedback" style="text-align:center;margin-top:0.75rem;font-size:14px;color:var(--green);font-weight:600;min-height:20px;font-style:italic;"></div>
+    </div>
+
+    <div class="card">
+      <div class="sec-title">This Month's Breakdown</div>
+      <div id="cat-breakdown"></div>
+    </div>
+  </div>
+
+  <!-- ══ HISTORY PAGE ══ -->
+  <div class="page" id="page-history">
+    <div class="page-header">
+      <button class="back-btn" onclick="goTo('page-home')">← Back</button>
+      <span class="page-header-title">All Transactions</span>
+    </div>
+    <div class="card">
+      <div class="hist-filter">
+        <select id="hist-cat" onchange="renderHistory()">
+          <option value="">All categories</option>
+        </select>
+        <select id="hist-sort" onchange="renderHistory()" style="width:155px">
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+          <option value="highest">Highest first</option>
+        </select>
+      </div>
+      <div id="history-list"></div>
+    </div>
+  </div>
+
+  <!-- ══ BUDGET MODAL ══ -->
+  <div class="modal-overlay" id="budget-modal" onclick="closeBudgetModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-title">Set Budget</div>
+      <p style="font-size:14px;color:var(--text2);margin-bottom:1.25rem;font-style:italic;" id="budget-modal-sub"></p>
+      <div class="form-group">
+        <label class="form-label">Monthly Budget (₹)</label>
+        <input type="number" id="budget-input" placeholder="e.g. 20000" min="0">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-primary" onclick="saveBudget()">Save Budget</button>
+        <button class="btn-secondary" onclick="closeBudgetModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ ADD CATEGORY MODAL ══ -->
+  <div class="modal-overlay" id="add-cat-modal" onclick="closeAddCatModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-title">New Category</div>
+      <div class="form-group">
+        <label class="form-label">Category Name</label>
+        <input type="text" id="new-cat-name" placeholder="e.g. Entertainment">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Pick an Icon</label>
+        <div class="emoji-picker" id="emoji-picker"></div>
+        <input type="text" id="new-cat-icon" placeholder="Or type any emoji" maxlength="4" style="width:220px;margin-top:6px">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-primary" onclick="saveNewCat()">Add Category</button>
+        <button class="btn-secondary" onclick="closeAddCatModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ DEBT MODAL ══ -->
+  <div class="modal-overlay" id="debt-modal" onclick="closeDebtModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-title" id="debt-modal-title">Add Reminder</div>
+      <div class="form-group">
+        <label class="form-label">Name / Description</label>
+        <input type="text" id="debt-name" placeholder="e.g. EMI – Car loan">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Amount (₹)</label>
+        <input type="number" id="debt-amount" placeholder="e.g. 5000" min="0">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Due Day of Month</label>
+        <input type="number" id="debt-due" placeholder="e.g. 5" min="1" max="31">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Type</label>
+        <select id="debt-type">
+          <option value="emi">EMI / Loan</option>
+          <option value="subscription">Subscription</option>
+          <option value="debt">Personal Debt</option>
+          <option value="rent">Rent / Utility</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-primary" onclick="saveDebt()">Save</button>
+        <button class="btn-secondary" onclick="closeDebtModal()">Cancel</button>
+        <button class="btn-secondary btn-danger" id="debt-del-btn" style="display:none" onclick="deleteDebt()">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ ADD INCOME MODAL ══ -->
+  <div class="modal-overlay" id="income-modal" onclick="closeIncomeModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-title">Add Income</div>
+      <div class="form-group">
+        <label class="form-label">Amount (₹)</label>
+        <input type="number" id="inc-amount" placeholder="0.00" min="0" step="0.01">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Source</label>
+        <select id="inc-source">
+          <option value="salary">💼 Salary</option>
+          <option value="freelance">💻 Freelance</option>
+          <option value="investment">📈 Investment</option>
+          <option value="gift">🎁 Gift</option>
+          <option value="refund">🔄 Refund</option>
+          <option value="other">💰 Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Note (optional)</label>
+        <input type="text" id="inc-note" placeholder="What was this for?">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date</label>
+        <input type="date" id="inc-date">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-primary" onclick="addIncome()">Save Income</button>
+        <button class="btn-secondary" onclick="closeIncomeModal()">Cancel</button>
+      </div>
+      <div id="income-feedback" style="text-align:center;margin-top:0.75rem;font-size:14px;color:var(--green);font-weight:600;min-height:20px;font-style:italic;"></div>
+    </div>
+  </div>
+
+  <script src="tracker.js"></script>
+  </body>
+</html> 

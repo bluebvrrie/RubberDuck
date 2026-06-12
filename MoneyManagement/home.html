@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - ExpenseFlow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@300;400;600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --maroon: #ac3c45;
+            --maroon-dark: #8a2d35;
+            --maroon-light: #f9ecee;
+            --maroon-mid: #c4545e;
+            --cream: #fdf8f5;
+            --ink: #1a1210;
+            --ink-muted: #5a4a47;
+            --ink-faint: #9e8e8b;
+            --border: rgba(172,60,69,0.12);
+            --white: #ffffff;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--white);
+            color: var(--ink);
+            overflow-x: hidden;
+        }
+
+        /* ── NAV ── */
+        nav {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2.5rem;
+            display: flex; align-items: center; justify-content: space-between;
+            height: 64px;
+        }
+        .nav-logo {
+            font-family: 'Fraunces', serif;
+            font-size: 1.4rem; font-weight: 700;
+            color: var(--maroon); letter-spacing: -0.02em;
+        }
+        .nav-tagline {
+            font-size: 0.8rem; color: var(--ink-faint);
+            font-style: italic; font-family: 'Fraunces', serif;
+        }
+        .nav-cta {
+            background: var(--maroon); color: #fff;
+            padding: 0.5rem 1.4rem; border-radius: 50px;
+            text-decoration: none; font-size: 0.85rem; font-weight: 500;
+            transition: background 0.2s, transform 0.15s;
+        }
+        .nav-cta:hover { background: var(--maroon-dark); transform: translateY(-1px); }
+
+        /* ── HERO ── */
+        .hero {
+            min-height: 92vh;
+            background: var(--cream);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            text-align: center;
+            padding: 5rem 2rem 4rem;
+            position: relative; overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(ellipse 70% 60% at 50% 60%, rgba(172,60,69,0.07) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .hero-eyebrow {
+            display: inline-block;
+            background: var(--maroon-light);
+            color: var(--maroon);
+            font-size: 0.78rem; font-weight: 600;
+            letter-spacing: 0.12em; text-transform: uppercase;
+            padding: 0.4rem 1rem; border-radius: 50px;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(172,60,69,0.2);
+        }
+        .hero-title {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(3.5rem, 10vw, 7.5rem);
+            font-weight: 900; line-height: 0.95;
+            letter-spacing: -0.04em;
+            color: var(--ink);
+            margin-bottom: 1.5rem;
+            opacity: 0; transform: translateY(-20px);
+            transition: opacity 1.2s ease, transform 0.9s ease;
+        }
+        .hero-title span { color: var(--maroon); }
+        .hero-subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.25rem);
+            color: var(--ink-muted); max-width: 520px;
+            line-height: 1.6; margin-bottom: 2.5rem;
+        }
+        .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+        .cta-button {
+            display: inline-block;
+            background: var(--maroon); color: #fff;
+            padding: 0.9rem 2.2rem; border-radius: 50px;
+            text-decoration: none; font-weight: 600; font-size: 1rem;
+            transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+            box-shadow: 0 4px 20px rgba(172,60,69,0.3);
+        }
+        .cta-button:hover { background: var(--maroon-dark); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(172,60,69,0.35); }
+        .cta-ghost {
+            display: inline-block;
+            border: 1.5px solid var(--maroon);
+            color: var(--maroon); padding: 0.9rem 2.2rem;
+            border-radius: 50px; text-decoration: none;
+            font-weight: 500; font-size: 1rem;
+            transition: background 0.2s;
+        }
+        .cta-ghost:hover { background: var(--maroon-light); }
+        .hero-stat-bar {
+            display: flex; gap: 2.5rem; margin-top: 4rem;
+            padding-top: 2rem; border-top: 1px solid var(--border);
+            flex-wrap: wrap; justify-content: center;
+        }
+        .hero-stat { text-align: center; }
+        .hero-stat strong { display: block; font-family: 'Fraunces', serif; font-size: 1.8rem; color: var(--maroon); }
+        .hero-stat span { font-size: 0.78rem; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.08em; }
+
+        /* ── SECTION WRAPPER ── */
+        .section { padding: 6rem 2rem; }
+        .section-inner { max-width: 1100px; margin: 0 auto; }
+        .section-label {
+            font-size: 0.75rem; font-weight: 600; letter-spacing: 0.14em;
+            text-transform: uppercase; color: var(--maroon);
+            margin-bottom: 0.75rem;
+        }
+        .section-title {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 700; line-height: 1.1;
+            letter-spacing: -0.03em; color: var(--ink);
+            margin-bottom: 1.2rem;
+        }
+        .section-title em { color: var(--maroon); font-style: normal; }
+        .section-desc {
+            font-size: 1.05rem; color: var(--ink-muted); max-width: 560px; line-height: 1.7;
+        }
+
+        /* ── WHAT IS IT GRID ── */
+        .info-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
+            margin-top: 3rem;
+        }
+        @media(max-width:640px){ .info-grid { grid-template-columns: 1fr; } }
+        .info-card {
+            background: var(--cream);
+            border: 1px solid var(--border);
+            border-radius: 20px; padding: 2rem;
+        }
+        .info-card h3 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.25rem; color: var(--maroon); margin-bottom: 0.75rem;
+        }
+        .info-card p { color: var(--ink-muted); line-height: 1.65; }
+
+        /* ── WHY SECTION ── */
+        .why-section { background: var(--cream); }
+        .features-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+            gap: 1.25rem; margin-top: 2.5rem;
+        }
+        .feature-item {
+            background: #fff; border: 1px solid var(--border);
+            border-radius: 16px; padding: 1.5rem;
+            font-size: 0.95rem; line-height: 1.6;
+        }
+        .feature-item strong { display: block; color: var(--ink); margin-bottom: 0.3rem; font-size: 1rem; }
+        .feature-item-icon {
+            font-size: 1.5rem; margin-bottom: 0.75rem; display: block;
+        }
+
+        /* ── HOW TO USE (3 STEPS) ── */
+        .steps-section { background: #fff; }
+        .steps-container { display: flex; flex-direction: column; gap: 6rem; margin-top: 4rem; }
+        .step-row {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+        }
+        .step-row.reverse { direction: rtl; }
+        .step-row.reverse > * { direction: ltr; }
+        @media(max-width:768px){
+            .step-row, .step-row.reverse { grid-template-columns: 1fr; direction: ltr; }
+        }
+        /* .step-content { } */
+        .step-number {
+            font-family: 'Fraunces', serif;
+            font-size: 5rem; font-weight: 900;
+            color: rgba(172,60,69,0.10); line-height: 1;
+            margin-bottom: -0.5rem;
+        }
+        .step-badge {
+            display: inline-block;
+            background: var(--maroon); color: #fff;
+            font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em;
+            text-transform: uppercase; padding: 0.3rem 0.9rem;
+            border-radius: 50px; margin-bottom: 1rem;
+        }
+        .step-content h3 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.9rem; font-weight: 700;
+            letter-spacing: -0.02em; color: var(--ink);
+            margin-bottom: 1rem; line-height: 1.2;
+        }
+        .step-content p { color: var(--ink-muted); line-height: 1.7; font-size: 1rem; }
+        .step-screenshot {
+            background: var(--cream);
+            border: 2px dashed rgba(172,60,69,0.25);
+            border-radius: 24px;
+            aspect-ratio: 4/3;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 0.75rem; color: var(--maroon);
+            font-size: 0.85rem; font-weight: 500;
+            text-align: center; padding: 2rem;
+            transition: border-color 0.2s;
+        }
+        .step-screenshot:hover { border-color: var(--maroon); }
+        .step-screenshot svg { opacity: 0.45; }
+        .step-screenshot span { color: var(--ink-faint); font-size: 0.78rem; }
+
+        /* ── MEDIA SECTION ── */
+        .media-section { background: var(--cream); }
+        .media-container {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 3rem;
+        }
+        @media(max-width:640px){ .media-container { grid-template-columns: 1fr; } }
+        .media-card {
+            background: #fff; border: 1px solid var(--border);
+            border-radius: 20px; padding: 2rem; overflow: hidden;
+        }
+        .media-tag {
+            display: inline-block;
+            background: var(--maroon-light); color: var(--maroon);
+            font-size: 0.75rem; font-weight: 600; padding: 0.3rem 0.8rem;
+            border-radius: 50px; margin-bottom: 1rem; letter-spacing: 0.05em;
+        }
+        .media-card h3 { font-family: 'Fraunces', serif; font-size: 1.3rem; margin-bottom: 0.5rem; }
+        .media-card p { color: var(--ink-muted); font-size: 0.9rem; margin-bottom: 1.25rem; }
+        .video-wrapper video, .audio-wrapper audio { width: 100%; border-radius: 10px; }
+
+        /* ── REVIEWS ── */
+        .reviews-section { background: #fff; }
+        .reviews-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+            gap: 1.25rem; margin-top: 3rem;
+        }
+        .review-card {
+            background: var(--cream); border: 1px solid var(--border);
+            border-radius: 20px; padding: 1.75rem;
+        }
+        .review-stars { font-size: 1rem; margin-bottom: 1rem; letter-spacing: 0.05em; }
+        .review-card p { color: var(--ink-muted); line-height: 1.65; font-size: 0.95rem; margin-bottom: 1rem; font-style: italic; }
+        .review-card strong { color: var(--ink); font-size: 0.85rem; }
+        .overall-rating {
+            margin-top: 2.5rem; text-align: center;
+            padding: 1.5rem; background: var(--maroon-light);
+            border-radius: 16px; border: 1px solid rgba(172,60,69,0.15);
+        }
+        .overall-rating h3 { font-family: 'Fraunces', serif; color: var(--maroon); margin-bottom: 0.4rem; }
+        .overall-rating p { font-size: 1.1rem; color: var(--ink); }
+
+        /* ── DASHBOARD PREVIEW ── */
+        .preview-section { background: var(--cream); }
+        .preview-section h2 { font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 700; color: var(--ink); margin-bottom: 1.5rem; }
+        .preview-section img { width: 100%; border-radius: 20px; border: 1px solid var(--border); }
+
+        /* ── TEAM ── */
+        .team-section { background: #fff; }
+        .team-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+            gap: 1.5rem; margin-top: 3rem;
+        }
+        .member-card {
+            border: 1px solid var(--border); border-radius: 20px;
+            overflow: hidden; transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .member-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(172,60,69,0.1); }
+        .image-wrapper {
+            width: 100%; aspect-ratio: 1/1; overflow: hidden;
+            background: var(--cream);
+        }
+        .image-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        .member-info { padding: 1.25rem 1.5rem 1.5rem; }
+        .member-name { font-family: 'Fraunces', serif; font-size: 1.15rem; font-weight: 700; color: var(--ink); margin-bottom: 0.25rem; }
+        .member-role { font-size: 0.78rem; color: var(--maroon); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-bottom: 0.75rem; }
+        .member-desc p { font-size: 0.88rem; color: var(--ink-muted); line-height: 1.6; }
+
+        /* ── CTA BANNER ── */
+        .cta-banner {
+            background: var(--maroon);
+            padding: 5rem 2rem;
+            text-align: center;
+        }
+        .cta-banner h2 {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            font-weight: 800; color: #fff;
+            letter-spacing: -0.02em; margin-bottom: 2rem;
+        }
+        .cta-banner .cta-button {
+            background: #fff; color: var(--maroon);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        .cta-banner .cta-button:hover { background: var(--cream); }
+
+        /* ── FAQ ── */
+        .faq-section { background: var(--cream); }
+        .faq-section h2 { font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 700; color: var(--ink); margin-bottom: 2rem; }
+        details {
+            border-bottom: 1px solid var(--border); padding: 1.25rem 0;
+        }
+        summary {
+            cursor: pointer; font-weight: 500; font-size: 1rem;
+            color: var(--ink); list-style: none; display: flex;
+            justify-content: space-between; align-items: center;
+        }
+        summary::after { content: '+'; color: var(--maroon); font-size: 1.3rem; font-weight: 300; }
+        details[open] summary::after { content: '−'; }
+        details p { color: var(--ink-muted); line-height: 1.65; margin-top: 0.75rem; padding-left: 0.25rem; }
+
+        /* ── FOOTER ── */
+        footer {
+            text-align: center; padding: 2rem;
+            font-size: 0.85rem; letter-spacing: 0.03em;
+        }
+        footer span { color: var(--maroon-mid); }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav style="background-image: url('media/homenav.jpg');">
+        <div class="nav-logo">ExpenseFlow</div>
+        <p class="nav-tagline">Welcome to the world of Budgeting</p>
+        <a href="login.html" class="nav-cta">Login</a>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <header class="hero">
+        <div class="hero-eyebrow">Personal Finance Simplified</div>
+        <h1 class="hero-title">Expense&nbsp;&nbsp;&nbsp;<span>Flow</span></h1>
+        <p class="hero-subtitle">Master your money, one transaction at a time.</p>
+        <div class="hero-actions">
+            <a href="login.html" class="cta-button">Get Started — It's Free</a>
+            <a href="#how-to-use" class="cta-ghost">See How It Works</a>
+        </div>
+        <div class="hero-stat-bar">
+            <div class="hero-stat">
+                <strong>1,200+</strong>
+                <span>Happy Users</span>
+            </div>
+            <div class="hero-stat">
+                <strong>4.8★</strong>
+                <span>Overall Rating</span>
+            </div>
+            <div class="hero-stat">
+                <strong>20%</strong>
+                <span>Average Savings Boost</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- WHAT IS IT SECTION -->
+    <section class="section">
+        <div class="section-inner">
+            <div class="section-label">About</div>
+            <h2 class="section-title">Built for people who want to <br> <em>own their finances</em></h2>
+            <p class="section-desc">A comprehensive personal finance tool designed for students and professionals to track spending habits in real-time.</p>
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>What is ExpenseFlow?</h3>
+                    <p>ExpenseFlow is a comprehensive personal finance tool designed for students and professionals to track spending habits in real-time.</p>
+                </div>
+                <div class="info-card">
+                    <h3>What does it do?</h3>
+                    <p>It allows you to set monthly limits, record income and expenses, and visualizes your financial health through interactive charts.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- WHY FINANCIAL TRACKING MATTERS -->
+    <section class="section why-section">
+        <div class="section-inner">
+            <div class="section-label">Why It Matters</div>
+            <h2 class="section-title">Why Financial Tracking <em>Matters</em></h2>
+            <p class="section-desc">Studies show that individuals who track their expenses save up to 20% more than those who don't. By identifying hidden costs, you gain the freedom to invest in what truly matters.</p>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <span class="feature-item-icon">📊</span>
+                    <strong>Visual Insights</strong>
+                    See exactly where your money goes with beautiful, interactive charts.
+                </div>
+                <div class="feature-item">
+                    <span class="feature-item-icon">🔔</span>
+                    <strong>Budget Discipline</strong>
+                    Get alerts the moment you're about to exceed your set limits.
+                </div>
+                <div class="feature-item">
+                    <span class="feature-item-icon">🔒</span>
+                    <strong>Data Privacy</strong>
+                    All your data is stored locally on your device — no cloud, no compromise.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW TO USE — 3 STEPS -->
+    <section class="section steps-section" id="how-to-use">
+        <div class="section-inner">
+            <div class="section-label">How It Works</div>
+            <h2 class="section-title">Get started in <em>3 simple steps</em></h2>
+            <p class="section-desc">From setup to financial clarity — it takes just a few minutes to transform how you manage money.</p>
+
+            <div class="steps-container">
+
+                <!-- Step 1 -->
+                <div class="step-row">
+                    <div class="step-content">
+                        <div class="step-number">01</div>
+                        <div class="step-badge">Step 1</div>
+                        <h3>Create your account & set your budget</h3>
+                        <p>Sign up in seconds, enter your monthly income, and set spending limits for each category — food, transport, entertainment, and more. ExpenseFlow instantly creates your personalised budget dashboard.</p>
+                    </div>
+                    <div class="step-screenshot">
+                        <svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="#ac3c45" stroke-width="1.2">
+                            <rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/>
+                        </svg>
+                        <strong>Screenshot Placeholder</strong>
+                        <span>Add your account creation / login screen here</span>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="step-row reverse">
+                    <div class="step-content">
+                        <div class="step-number">02</div>
+                        <div class="step-badge">Step 2</div>
+                        <h3>Record your income & expenses</h3>
+                        <p>Log transactions on the go — add amounts, pick a category, and add notes. ExpenseFlow automatically calculates your remaining budget and updates your charts in real-time so you always know where you stand.</p>
+                    </div>
+                    <div class="step-screenshot">
+                        <svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="#ac3c45" stroke-width="1.2">
+                            <path d="M12 4v16m-8-8h16"/><circle cx="12" cy="12" r="9"/>
+                        </svg>
+                        <strong>Screenshot Placeholder</strong>
+                        <span>Add your add transaction / entry screen here</span>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="step-row">
+                    <div class="step-content">
+                        <div class="step-number">03</div>
+                        <div class="step-badge">Step 3</div>
+                        <h3>Analyse your habits & grow your savings</h3>
+                        <p>View beautiful charts that break down your spending by category and time. Spot patterns, cut unnecessary costs, and watch your savings grow month over month — all from one clean dashboard.</p>
+                    </div>
+                    <div class="step-screenshot">
+                        <svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="#ac3c45" stroke-width="1.2">
+                            <path d="M4 20l4-6 4 4 4-8 4 4"/><rect x="2" y="2" width="20" height="20" rx="3"/>
+                        </svg>
+                        <strong>Screenshot Placeholder</strong>
+                        <span>Add your analytics / charts dashboard here</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- MEDIA SECTION -->
+    <section class="section media-section">
+        <div class="section-inner">
+            <div class="section-label">Resources</div>
+            <h2 class="section-title">Learn, listen, and <em>level up</em></h2>
+            <div class="media-container">
+                <div class="media-card video-card">
+                    <span class="media-tag">📹 Video</span>
+                    <h3>Financial Tips</h3>
+                    <p>Watch curated videos on budgeting, saving, and growing your wealth.</p>
+                    <div class="video-wrapper">
+                        <video controls>
+                            <source src="media/finance-tips.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </div>
+                <div class="media-card audio-card">
+                    <span class="media-tag">🎧 Audio</span>
+                    <h3>Money Mindset</h3>
+                    <p>Listen to financial wellness podcasts and guided audio sessions.</p>
+                    <div class="audio-wrapper">
+                        <audio controls>
+                            <source src="media/money-mindset.mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- REVIEWS -->
+    <section class="section reviews-section">
+        <div class="section-inner">
+            <div class="section-label">Testimonials</div>
+            <h2 class="section-title">What our <em>users say</em></h2>
+            <div class="reviews-grid">
+                <div class="review-card">
+                    <div class="review-stars">⭐⭐⭐⭐⭐</div>
+                    <p>"ExpenseFlow helped me save ₹3000 every month."</p>
+                    <strong>— Rahul, Student</strong>
+                </div>
+                <div class="review-card">
+                    <div class="review-stars">⭐⭐⭐⭐☆</div>
+                    <p>"Easy to use and the charts are very helpful."</p>
+                    <strong>— Anjali, Freelancer</strong>
+                </div>
+                <div class="review-card">
+                    <div class="review-stars">⭐⭐⭐⭐⭐</div>
+                    <p>"The budget alerts keep me disciplined."</p>
+                    <strong>— Arjun, Engineer</strong>
+                </div>
+            </div>
+            <div class="overall-rating">
+                <h3>Overall Rating</h3>
+                <p>⭐ 4.8 / 5 &nbsp;·&nbsp; 1,200+ users</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- DASHBOARD PREVIEW -->
+    <section class="section preview-section">
+        <div class="section-inner">
+            <div class="section-label">Preview</div>
+            <h2>Dashboard Preview</h2>
+            <img src="media/dashboard.jpg" alt="ExpenseFlow Dashboard">
+        </div>
+    </section>
+
+    <!-- TEAM -->
+    <section class="section team-section">
+        <div class="section-inner">
+            <div class="section-label">The Team</div>
+            <h2 class="section-title"><em>Creators</em></h2>
+            <div class="team-grid">
+                <div class="member-card">
+                    <div class="image-wrapper">
+                        <img src="media/img1.jpeg" alt="Harinandana L">
+                    </div>
+                    <div class="member-info">
+                        <p class="member-name">Harinandana L</p>
+                        <p class="member-role">Student · Amrita Vishwa Vidyapeetham</p>
+                        <div class="member-desc">
+                            <p>Focused on the overall system architecture and ensuring consistent application of the Box Model across the ExpenseFlow platform.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="member-card">
+                    <div class="image-wrapper">
+                        <img src="media/img2.jpeg" alt="Devananda B">
+                    </div>
+                    <div class="member-info">
+                        <p class="member-name">Devananda B</p>
+                        <p class="member-role">Student · Amrita Vishwa Vidyapeetham</p>
+                        <div class="member-desc">
+                            <p>Led the visual direction, defining the #ac3c45 maroon color grading and typography for a professional finish.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="member-card">
+                    <div class="image-wrapper">
+                        <img src="media/img3.jpeg" alt="Keerthana S Nair">
+                    </div>
+                    <div class="member-info">
+                        <p class="member-name">Keerthana S Nair</p>
+                        <p class="member-role">Student · Amrita Vishwa Vidyapeetham</p>
+                        <div class="member-desc">
+                            <p>Engineered the interactive dashboards and solved the chart sizing issues to maintain a clean layout.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA BANNER -->
+    <section class="cta-banner">
+        <h2>Ready to take control of your finances?</h2>
+        <a href="login.html" class="cta-button">Start Tracking Today</a>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section faq-section">
+        <div class="section-inner">
+            <div class="section-label">FAQ</div>
+            <h2>Frequently Asked Questions</h2>
+            <details>
+                <summary>Is my data secure?</summary>
+                <p>Yes, all information is stored securely on your local device. No data is sent to any external server.</p>
+            </details>
+            <details>
+                <summary>Can I set budget limits?</summary>
+                <p>Yes, monthly limits can be configured for each spending category from your dashboard settings.</p>
+            </details>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 <span>ExpenseFlow</span>. Designed for Smart Financial Management.</p>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const heroTitle = document.querySelector(".hero-title");
+            const subtitle = document.querySelector(".hero-subtitle");
+
+            heroTitle.style.opacity = "0";
+            heroTitle.style.transition = "opacity 1.5s ease-in, transform 1s ease-out";
+            heroTitle.style.transform = "translateY(-20px)";
+
+            setTimeout(() => {
+                heroTitle.style.opacity = "1";
+                heroTitle.style.transform = "translateY(0)";
+            }, 100);
+        });
+    </script>
+</body>
+</html>

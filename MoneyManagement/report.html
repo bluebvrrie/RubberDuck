@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@300;400;600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <title>Monthly Report - ExpenseFlow</title>
+    <style>
+        :root {
+            --maroon: #ac3c45;
+            --maroon-dark: #8a2d35;
+            --maroon-light: #f9ecee;
+            --maroon-mid: #c4545e;
+            --cream: #fdf8f5;
+            --ink: #1a1210;
+            --ink-muted: #5a4a47;
+            --ink-faint: #9e8e8b;
+            --border: rgba(172,60,69,0.12);
+            --white: #ffffff;
+            --radius: 20px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--cream);
+            color: var(--ink);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        /* ── NAV ── */
+        nav {
+            position: sticky; top: 0; z-index: 100;
+            background-image: url('media/reportnav.png');
+            background-size: cover;
+            background-position: center;
+            border-bottom: 1px solid var(--border);
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 2px 24px rgba(100,20,30,0.25);
+        }
+
+        nav h2 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            color: var(--maroon);
+            letter-spacing: -0.02em;
+        }
+
+        #menuBtn {
+            position: absolute;
+            left: 20px;
+            background: rgba(255,255,255,0.7);
+            border: 1px solid var(--border);
+            font-size: 1.3rem;
+            color: var(--maroon);
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        #menuBtn:hover {
+            background: var(--maroon-light);
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            position: fixed;
+            top: 0; left: -280px;
+            width: 280px; height: 100vh;
+            background-image: url('media/side.jpg');
+            background-size: cover;
+            background-position: center;
+            box-shadow: 4px 0 24px rgba(0,0,0,0.08);
+            z-index: 200;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            transition: left 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .sidebar.open {
+            left: 0;
+        }
+
+        .sidebar h2 {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1.6rem;
+            color: darkgreen;
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar button {
+            background: transparent;
+            border: 1px solid var(--border);
+            padding: 12px 18px;
+            border-radius: 12px;
+            text-align: left;
+            font-family: inherit;
+            font-size: 1rem;
+            color: var(--ink-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+        .sidebar button:hover {
+            background: var(--maroon-light);
+            color: var(--maroon);
+            border-color: var(--maroon);
+        }
+
+        /* ── OVERLAY ── */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(4px);
+            z-index: 150;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .overlay.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* ── CONTAINER ── */
+        .container {
+            max-width: 820px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* ── CARDS ── */
+        .card {
+            background: var(--white);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 2.25rem;
+            box-shadow: 0 4px 20px rgba(172,60,69,0.06);
+        }
+
+        /* ── FORM BOX ── */
+        .form-box {
+            background: var(--cream);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 10px;
+        }
+        .form-box h4 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.15rem;
+            color: var(--maroon);
+            margin-bottom: 12px;
+        }
+        .form-box p {
+            font-size: 1rem;
+            color: var(--ink-muted);
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        .form-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* ── TEXT COLOR CLASS ── */
+        .income {
+            color: #27ae60;
+            font-weight: 600;
+        }
+        .expense {
+            color: var(--maroon);
+            font-weight: 600;
+        }
+
+        /* ── TIMELINE ── */
+        .timeline-container {
+            position: relative;
+            margin-top: 40px;
+            padding-left: 30px;
+        }
+        .timeline-line {
+            position: absolute;
+            left: 8px; top: 0; bottom: 0;
+            width: 2px;
+            background: var(--border);
+        }
+
+        .story-point {
+            position: relative;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 12px rgba(172,60,69,0.04);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .story-point.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .story-point::before {
+            content: '';
+            position: absolute;
+            left: -27px; top: 24px;
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            background: var(--maroon);
+            border: 2px solid var(--white);
+            box-shadow: 0 0 0 3px rgba(172,60,69,0.15);
+        }
+
+        .story-point h3 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.25rem;
+            color: var(--maroon);
+            margin-bottom: 8px;
+        }
+        .story-point p {
+            font-size: 0.95rem;
+            color: var(--ink-muted);
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <button id="menuBtn" onclick="toggleSidebar()">☰</button>
+        <h2>ExpenseFlow</h2>
+    </nav>
+
+    
+    <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+    <div class="sidebar" id="sidebar">
+       <h2 align="center" >All Pages</h2>
+            <button style="color:darkgreen;" onclick="window.location.href='home.html'">Home</button>
+            <button style="color:darkgreen;" onclick="window.location.href='tracker.html'">Add expenses</button>
+            <button style="color:darkgreen;" onclick="window.location.href='dashboard.html'">Dashboard</button>
+            <button style="color:darkgreen;" onclick="window.location.href='login.html'">Log Out</button>
+        
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <h2 style="text-align: center; margin-bottom: 20px; color:#ac3c45;">Monthly Financial Conclusion</h2>
+            <hr style="margin-bottom: 20px; border: 0.5px solid #eee;">
+            
+            <div id="reportDisplay">
+            </div>
+        </div>
+
+        <h2 style="text-align: center; margin-top: 60px; color: #ac3c45; text-transform: uppercase; letter-spacing: 1px;">
+            Your Monthly Journey
+        </h2>
+        
+        <div class="timeline-container">
+            <div class="timeline-line"></div>
+            <div id="storyDisplay">
+                </div>
+        </div>
+
+        <div style="margin: 60px 0 40px; text-align: center; padding-top: 20px; border-top: 1px solid #ddd;">
+            <p style="color: #666; margin-bottom: 20px; font-style: italic;">Finished reviewing your month?</p>
+            <div style="display: flex; justify-content: center; gap: 15px;">
+                <button onclick="window.print()" style="width: auto; padding: 12px 40px; background: #7da0d4;">
+                    Download Report (PDF)
+                </button>
+                <button onclick="resetData()" style="width: auto; padding: 12px 40px; background: #c97a85;">
+                    Reset All Data
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="report.js"></script>
+</body>
+</html>

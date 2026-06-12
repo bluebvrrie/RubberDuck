@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - ExpenseFlow</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent: #8b2635;
+            --accent-light: rgba(139,38,53,0.12);
+            --accent-mid: rgba(139,38,53,0.45);
+            --text-primary: rgba(60,15,20,0.92);
+            --text-secondary: rgba(100,40,50,0.72);
+            --text-muted: lavenderblush;
+            --glass: rgba(255,248,245,0.22);
+            --glass-strong: rgba(255,248,245,0.32);
+            --border: rgba(200,100,110,0.18);
+            --border-strong: rgba(139,38,53,0.28);
+            --shadow: 0 4px 32px rgba(100,20,30,0.13);
+            --shadow-lg: 0 8px 48px rgba(100,20,30,0.18);
+            --radius: 20px;
+            --radius-sm: 12px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-image: url('media/dashback.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            font-family: 'EB Garamond', serif;
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+
+        /* ── NAV ── */
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 58px;
+            position: relative;
+            border-bottom: 1px solid rgba(139,38,53,0.55);
+            box-shadow: 0 2px 24px rgba(100,20,30,0.55);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            background: rgba(40,10,15,0.18);
+        }
+
+        .nav-brand {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 19px;
+            color: rgba(255,235,225,0.93);
+            letter-spacing: 0.08em;
+            text-shadow: 0 1px 8px rgba(60,10,20,0.4);
+        }
+
+        .nav-actions {
+            position: absolute;
+            right: 24px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-nav {
+            background: rgba(255,255,255,0.82);
+            color: var(--accent);
+            border: 1.5px solid var(--border-strong);
+            border-radius: 10px;
+            padding: 7px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: 'EB Garamond', serif;
+            letter-spacing: 0.02em;
+            transition: all 0.18s ease;
+        }
+        .btn-nav:hover {
+            background: var(--accent);
+            color: rgba(255,240,235,0.95);
+            border-color: var(--accent);
+        }
+
+        /* ── PAGE LAYOUT ── */
+        .page {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 52px 32px 80px;
+        }
+
+        /* ── PAGE HEADER ── */
+        .page-header {
+            margin-bottom: 48px;
+        }
+        .page-eyebrow {
+            font-size: 13px;
+            font-family: 'EB Garamond', serif;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 42px;
+            font-weight: 400;
+            color: rgba(255,240,235,0.95);
+            text-shadow: 0 2px 18px rgba(60,10,20,0.45);
+            line-height: 1.1;
+        }
+        .page-title em {
+            font-style: italic;
+            color: rgba(255,200,190,0.9);
+        }
+
+        /* ── SUMMARY CARDS ── */
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 28px 28px 24px;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card h3 {
+            font-size: 10.5px;
+            font-family: 'EB Garamond', serif;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: rgba(255,220,210,0.65);
+            margin-bottom: 14px;
+            font-weight: 400;
+        }
+
+        .card-amount {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 600;
+            line-height: 1;
+            letter-spacing: -0.01em;
+        }
+        .card-amount.income  { color: rgba(255,240,235,0.95); }
+        .card-amount.expense { color: rgba(220,140,140,0.9); }
+        .card-amount.balance { color: #27ae60; }
+        .card-amount.balance.negative { color: #c0392b; }
+
+        .card-accent-bar {
+            height: 2px;
+            border-radius: 2px;
+            margin-bottom: 18px;
+        }
+        .income-bar  { background: rgba(255,230,220,0.35); }
+        .expense-bar { background: rgba(200,80,90,0.45); }
+        .balance-bar { background: rgba(39,174,96,0.45); }
+
+        /* ── CHARTS ── */
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+
+        .chart-box {
+            background: var(--glass);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 28px 28px 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .chart-box h3 {
+            font-size: 10.5px;
+            font-family: 'EB Garamond', serif;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: rgba(255,220,210,0.65);
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+
+        .chart-wrapper {
+            height: 260px;
+            position: relative;
+        }
+
+        /* ── REPORT LINK ── */
+        .report-row {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 8px;
+        }
+
+        .report-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'EB Garamond', serif;
+            font-size: 14px;
+            letter-spacing: 0.06em;
+            color: rgba(255,215,200,0.82);
+            text-decoration: none;
+            padding: 10px 22px;
+            background: var(--glass);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            transition: all 0.18s ease;
+        }
+        .report-link:hover {
+            background: var(--accent-light);
+            border-color: var(--border-strong);
+            color: rgba(255,230,220,0.95);
+        }
+        .report-link::after {
+            content: '→';
+            font-size: 15px;
+            transition: transform 0.18s;
+        }
+        @media (max-width: 850px) {
+            nav {
+                flex-direction: column;
+                height: auto;
+                padding: 12px 16px;
+                gap: 12px;
+                align-items: center;
+                justify-content: center;
+            }
+            .nav-actions {
+                position: static;
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+        }
+        
+        /* ── REMINDERS CHECKLIST ── */
+        .reminders-card {
+            margin-bottom: 28px;
+            background: var(--glass);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 28px 28px 24px;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+        .reminders-card h3 {
+            font-size: 10.5px;
+            font-family: 'EB Garamond', serif;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: rgba(255,220,210,0.65);
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+        .reminders-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .reminder-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-sm);
+            transition: all 0.2s ease;
+        }
+        .reminder-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+        .reminder-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .reminder-checkbox {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 1.5px solid var(--border-strong);
+            border-radius: 4px;
+            cursor: pointer;
+            outline: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.9);
+            transition: all 0.15s ease;
+        }
+        .reminder-checkbox:checked {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+        .reminder-checkbox:checked::after {
+            content: '✓';
+            color: #fff;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .reminder-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .reminder-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: rgba(255, 240, 235, 0.95);
+            transition: all 0.25s ease;
+        }
+        .reminder-meta {
+            font-size: 11px;
+            color: rgba(255, 220, 210, 0.6);
+            font-style: italic;
+            margin-top: 2px;
+        }
+        .reminder-amt {
+            font-family: 'Playfair Display', serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: rgba(255, 240, 235, 0.95);
+            transition: all 0.25s ease;
+        }
+        
+        /* Completed states */
+        .reminder-item.completed {
+            opacity: 0.55;
+        }
+        .reminder-item.completed .reminder-name,
+        .reminder-item.completed .reminder-amt {
+            text-decoration: line-through;
+            color: rgba(255, 220, 210, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <span class="nav-brand">Expense  Flow</span>
+        <div class="nav-actions">
+            <button class="btn-nav" onclick="window.location.href='tracker.html'">tracker</button>
+            <button class="btn-nav" onclick="window.location.href='home.html'">log out</button>
+            <button class="btn-nav" onclick="window.location.href='login.html'">switch accounts</button>
+        </div>
+    </nav>
+
+    <div class="page">
+
+        <header class="page-header">
+            <p class="page-eyebrow">Your Finances</p>
+            <h1 class="page-title">Financial <em>Overview</em></h1>
+        </header>
+
+        <!-- SUMMARY CARDS -->
+        <div class="cards-container">
+            <div class="card">
+                <div class="card-accent-bar income-bar"></div>
+                <h3>Total Income</h3>
+                <p id="income" class="card-amount income">₹0</p>
+            </div>
+            <div class="card">
+                <div class="card-accent-bar expense-bar"></div>
+                <h3>Total Expenses</h3>
+                <p id="expense" class="card-amount expense">₹0</p>
+            </div>
+            <div class="card">
+                <div class="card-accent-bar balance-bar"></div>
+                <h3>Current Balance</h3>
+                <p id="balance" class="card-amount balance">₹0</p>
+            </div>
+        </div>
+
+        <!-- REMINDER CHECKLIST -->
+        <div class="card reminders-card">
+            <div class="card-accent-bar balance-bar" style="background: rgba(139,38,53,0.45);"></div>
+            <h3>Active Reminders & Debts</h3>
+            <div id="reminders-list" class="reminders-list"></div>
+        </div>
+
+        <!-- CHARTS -->
+        <div class="charts-container">
+            <div class="chart-box">
+                <h3>Spending by Category</h3>
+                <div class="chart-wrapper">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-box">
+                <h3>Transaction History</h3>
+                <div class="chart-wrapper">
+                    <canvas id="lineChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="report-row" style="text-align: center;">
+            <a href="tracker.html"  class="report-link" >Track Now</a>&emsp;&emsp;
+            <a href="report.html" class="report-link" onclick="viewHistory(event)">View Monthly Report</a>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const data = JSON.parse(localStorage.getItem("spendbook-v1")) || {};
+
+            let totalExpense = 0;
+            (data.expenses || []).forEach(exp => { totalExpense += parseFloat(exp.amount) || 0; });
+
+            let totalIncome = 0;
+            (data.incomes || []).forEach(inc => { totalIncome += parseFloat(inc.amount) || 0; });
+
+            const transactions = (data.expenses || []).map(exp => ({
+                amount: exp.amount, category: exp.catId, date: exp.date, type: "expense"
+            }));
+
+            const balance = totalIncome - totalExpense;
+
+            const incomeEl  = document.getElementById("income");
+            const expenseEl = document.getElementById("expense");
+            const balanceEl = document.getElementById("balance");
+
+            if (incomeEl)  incomeEl.innerText  = `₹${totalIncome.toLocaleString()}`;
+            if (expenseEl) expenseEl.innerText = `₹${totalExpense.toLocaleString()}`;
+            if (balanceEl) {
+                balanceEl.innerText = `₹${Math.abs(balance).toLocaleString()}`;
+                if (balance < 0) balanceEl.classList.add("negative");
+            }
+
+            // PIE CHART
+            const categoryData = {};
+            transactions.filter(t => t.type === "expense").forEach(t => {
+                categoryData[t.category] = (categoryData[t.category] || 0) + parseFloat(t.amount);
+            });
+
+            const pieColors = ["red","purple","lightblue","orchid","salmon",]
+            new Chart(document.getElementById('pieChart').getContext('2d'), {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(categoryData),
+                    datasets: [{
+                        data: Object.values(categoryData),
+                        backgroundColor: pieColors,
+                        borderColor: 'rgba(255,240,235,0.25)',
+                        borderWidth: 1.5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: 'rgba(255,225,215,0.75)',
+                                font: { family: "'EB Garamond', serif", size: 13 },
+                                padding: 14,
+                                boxWidth: 12,
+                                boxHeight: 12
+                            }
+                        }
+                    }
+                }
+            });
+
+            // LINE CHART
+            const dailyExpenses = {};
+            transactions.filter(t => t.type === "expense").forEach(t => {
+                dailyExpenses[t.date] = (dailyExpenses[t.date] || 0) + parseFloat(t.amount);
+            });
+
+            new Chart(document.getElementById('lineChart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: Object.keys(dailyExpenses),
+                    datasets: [{
+                        label: 'Daily Expenses (₹)',
+                        data: Object.values(dailyExpenses),
+                        borderColor: 'rgba(200,100,110,0.85)',
+                        backgroundColor: 'rgba(180,70,80,0.08)',
+                        pointBackgroundColor: 'rgba(200,100,110,0.9)',
+                        pointBorderColor: 'rgba(255,240,235,0.6)',
+                        pointBorderWidth: 1.5,
+                        pointRadius: 4,
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: 'rgba(255,215,205,0.6)',
+                                font: { family: "'EB Garamond', serif", size: 12 }
+                            },
+                            grid: { color: 'rgba(255,200,190,0.08)' }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: 'rgba(255,215,205,0.6)',
+                                font: { family: "'EB Garamond', serif", size: 12 },
+                                callback: v => '₹' + v.toLocaleString()
+                            },
+                            grid: { color: 'rgba(255,200,190,0.08)' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'rgba(255,225,215,0.7)',
+                                font: { family: "'EB Garamond', serif", size: 13 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => `Expense: ₹${ctx.raw.toLocaleString()}`
+                            }
+                        }
+                    }
+                }
+            });
+
+            // REMINDERS CHECKLIST
+            const remindersListEl = document.getElementById("reminders-list");
+            const debts = data.debts || [];
+            
+            const TYPE_ICONS = {
+                emi: '🏦', subscription: '🔄', debt: '🤝', rent: '🏠', other: '🔔'
+            };
+
+            function ordinal(n) {
+                const s = ['th','st','nd','rd'];
+                return n + (s[(n % 100 - 20) % 10] || s[n % 100] || s[0]);
+            }
+
+            function renderReminders() {
+                if (!remindersListEl) return;
+                
+                if (debts.length === 0) {
+                    remindersListEl.innerHTML = `<p style="color: rgba(255,220,210,0.5); font-style: italic; text-align: center; padding: 10px 0;">No active reminders added.</p>`;
+                    return;
+                }
+
+                remindersListEl.innerHTML = debts.map(d => {
+                    const isCompleted = d.completed === true;
+                    const icon = TYPE_ICONS[d.type] || '🔔';
+                    const dueText = d.due ? `Due on the ${ordinal(d.due)}` : 'No due day';
+                    const amountText = `₹${Math.round(d.amount).toLocaleString('en-IN')}`;
+
+                    return `
+                        <div class="reminder-item ${isCompleted ? 'completed' : ''}" data-id="${d.id}">
+                            <div class="reminder-left">
+                                <input type="checkbox" class="reminder-checkbox" ${isCompleted ? 'checked' : ''} onchange="toggleReminder('${d.id}', this.checked)">
+                                <div class="reminder-info">
+                                    <span class="reminder-name">${icon} ${d.name}</span>
+                                    <span class="reminder-meta">${d.type.toUpperCase()} • ${dueText}</span>
+                                </div>
+                            </div>
+                            <span class="reminder-amt">${amountText}</span>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            window.toggleReminder = function(id, isChecked) {
+                const debt = debts.find(x => x.id === id);
+                if (debt) {
+                    debt.completed = isChecked;
+                    // Save to local storage
+                    const fullData = JSON.parse(localStorage.getItem("spendbook-v1")) || {};
+                    fullData.debts = debts;
+                    localStorage.setItem("spendbook-v1", JSON.stringify(fullData));
+                    
+                    // Re-render checklist item styling
+                    const itemEl = document.querySelector(`.reminder-item[data-id="${id}"]`);
+                    if (itemEl) {
+                        if (isChecked) {
+                            itemEl.classList.add("completed");
+                        } else {
+                            itemEl.classList.remove("completed");
+                        }
+                    }
+                }
+            };
+
+            renderReminders();
+        });
+
+        function viewHistory(e) {
+            e.preventDefault();
+            window.location.href = "report.html";
+        }
+    </script>
+</body>
+</html>
